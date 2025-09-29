@@ -1,0 +1,8 @@
+{
+  "strategyOrder": ["cookie", "header", "ip", "percentage"],
+  "cookieName": "pricing_version",
+  "headerName": "x-version",
+  "percentage": { "blue": 70, "green": 30 },
+  "sticky": true,
+  "stickyDays": 30
+}
