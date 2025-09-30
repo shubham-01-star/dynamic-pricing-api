@@ -1,67 +1,49 @@
 Dynamic Pricing Backend (Blue-Green Deployment)
 Overview
 
-This backend service demonstrates Blue-Green deployment for pricing APIs.
-It dynamically serves different pricing versions (blue or green) based on configurable routing strategies such as:
-
-Cookie
-
-Request header
-
-IP hashing
-
-Random percentage (load testing)
-
-Sticky sessions are supported to ensure consistent responses for repeat users.
+This backend serves dynamic pricing versions (blue / green) using configurable routing strategies. Sticky sessions ensure repeat users see the same version.
 
 Features
 
-✅ Dynamic pricing version selection (blue / green)
+Dynamic pricing version selection (blue/green)
 
-✅ Configurable routing strategies
+Configurable routing strategies
 
-✅ Sticky sessions via cookies
+Sticky sessions via cookies
 
-✅ Logging of routing decisions
+Logging of routing decisions
 
-✅ Health endpoint for monitoring
+Health check endpoint
 
-✅ Works with any frontend (CORS enabled)
+CORS enabled for any frontend
 
 Tech Stack
 
-Node.js (v22.x recommended)
+Node.js (v22.x)
 
 Express.js
 
 TypeScript
 
-Cookie-parser, CORS, Morgan
+cookie-parser, CORS, morgan
 
-Crypto (built-in Node.js module)
+crypto (built-in)
 
 Folder Structure
-backend/
-├── src/
-│   ├── config/
-│   │   ├── routing-config.json      # Routing strategy config
-│   │   ├── blue.json                # Blue version pricing data
-│   │   └── green.json               # Green version pricing data
-│   ├── controllers/
-│   │   └── PricingController.ts     # API controller
-│   ├── services/
-│   │   └── RoutingService.ts        # Routing logic
-│   ├── utils/
-│   │   └── logger.ts                # Logging helper
-│   └── index.ts                     # Entry point
-├── dist/                             # Compiled JS files
-├── package.json
-├── tsconfig.json
-└── README.md
+src/
+ ├─ config/       # routing-config.json, blue.json, green.json
+ ├─ controllers/  # PricingController.ts
+ ├─ services/     # RoutingService.ts
+ ├─ utils/        # logger.ts
+ └─ index.ts      # entry point
+dist/             # compiled JS
+package.json
+tsconfig.json
+README.md
 
-Setup & Installation
+Setup
 
-Clone the repository:
+Clone repo:
 
 git clone <repo-url>
 cd backend
@@ -72,7 +54,7 @@ Install dependencies:
 npm install
 
 
-Ensure your src/config/ folder contains:
+Ensure src/config/ has:
 
 routing-config.json
 
@@ -93,71 +75,55 @@ Example routing-config.json:
 
 Scripts
 
-Run in development mode:
+Development:
 
 npm run dev
 
 
-Compile TypeScript:
+Build:
 
 npm run build
 
 
-Run compiled backend:
+Start compiled backend:
 
 npm run start
 
 API Endpoints
 Method	Endpoint	Description
-GET	/api/v1/pricing	Get pricing data (blue/green)
-GET	/api/v1/health	Health check (returns {status: ok})
+GET	/api/v1/pricing	Get pricing data
+GET	/api/v1/health	Health check ({status:ok})
 
-Example Request (Curl):
+Example Curl:
 
-curl -i http://localhost:3000/api/v1/pricing
+curl http://localhost:3000/api/v1/pricing
 
 
 Response:
 
 {
   "servedVersion": "green",
-  "pricing": {
-    "plan": "Pro",
-    "price": 49
-  }
+  "pricing": { "plan": "Pro", "price": 49 }
 }
 
-Routing Strategies
+Routing Logic
 
-Routing is determined based on the configured strategy order:
+Routing follows the configured strategyOrder:
 
-Cookie: If user has pricing_version cookie → use it.
+Cookie – if version exists, use it
 
-Header: If request contains x-version header → use it.
+Header – x-version overrides cookie/IP
 
-IP: Hash client IP → determine version based on percentage config.
+IP – hash IP → assign version based on percentage
 
-Percentage: Random version based on blue/green percentage.
+Percentage – random version based on config
 
-Sticky sessions:
-If enabled, selected version is saved in cookie for repeat requests.
-
-Logging
-
-Every request logs:
-
-[Routing] Strategy order: [ 'cookie', 'header', 'ip', 'percentage' ]
-[Routing] Chosen from IP: green
-{"timestamp":"...","ip":"...","path":"/api/v1/pricing","method":"GET","servedVersion":"green"}
+Sticky sessions store the chosen version in a cookie for repeat requests.
 
 Notes
 
-Make sure dist/ folder exists after npm run build before running npm start.
+Local IP (::1) may always resolve same version due to hashing.
 
-Localhost IP (::1) may always resolve to same version due to IP hashing. For random tests, disable ip strategy or use different IPs.
+Ensure dist/ exists after npm run build before starting.
 
-Frontend can use cookie to maintain consistent version for sticky sessions.
-
-License
-
-MIT License
+Frontend can rely on cookies to maintain sticky sessions.
